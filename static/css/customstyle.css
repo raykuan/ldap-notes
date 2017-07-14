@@ -1,0 +1,38 @@
+.none-padding {
+    padding: 0 !important;
+}
+
+.down_border{
+    border-bottom: 1px solid;
+}
+
+.common-bgcolor {
+    background: #5499dd !important;
+}
+
+.navi{
+    height: 75px;
+    padding: 10px;
+    /*border-bottom: 1px solid;*/
+}
+
+.logintext{
+    padding: 100px 15px 15px 15px;
+}
+
+.loginform{
+    margin: 30px 15px 15px 15px;
+    padding: 50px 15px 15px 15px;
+    background: white;
+    height: 260px;
+}
+
+.pagefooter {
+    background: #f7f7f8;
+    color: #999999;
+    font-size: 11px;
+    line-height: 20px;
+    margin: 105px 0 0 0;
+    padding: 15px 0;
+    text-align: center;
+}
