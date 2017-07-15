@@ -1,12 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>index</title>
-</head>
-<body>
-    <h2>
-        Welcom login {{ username }} !
-    </h2>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block nav %}
+    {% include 'nav.html' %}
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid indexcontent">
+        <div class="row">
+            <div class="navleft col-sm-2">
+                <div class="list-group">
+                    <a href="#" class="list-group-item active">个人信息</a>
+                    <a href="/changepwd" class="list-group-item">修改密码</a>
+                    <a href="#" class="list-group-item">组织架构</a>
+                </div>
+            </div>
+            <div class="navright col-sm-8">
+                <table class="table">
+                    <tr>
+                        <th class="col-sm-2" style="text-align: right">AD账号详情</th>
+                        <th></th>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right">AD账号:</td>
+                        <td>{{ data.user_id }}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right">姓名:</td>
+                        <td>{{ data.user_displayname }}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right">邮箱:</td>
+                        <td>leik@eptok.com</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right">部门:</td>
+                        <td>技术管理部</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right">座机:</td>
+                        <td>29986700</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right">手机:</td>
+                        <td>13631662360</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

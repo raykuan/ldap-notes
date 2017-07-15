@@ -25,9 +25,26 @@ class LoginFrom(forms.Form):
                                  '701': '账户已过期！',
                                  '773': '下次登录强制修改密码！',
                                  '775': '账户已被锁，请联系管理员！'}
-                    self.errors['错误信息：'] = ldapcodes[code]
+                    self.errors['提示:'] = ldapcodes[code]
                     return msg
                 data = ad.get_user_status(username)
                 return data
             except Exception as e:
                 raise e
+
+
+class ChangePwdForm(forms.Form):
+    oldpwd = forms.CharField(required=True, error_messages={'required': '密码不能为空'})
+    newpwd = forms.CharField(required=True, error_messages={'required': '密码不能为空'})
+    newpwd2 = forms.CharField(required=True, error_messages={'required': '密码不能为空'})
+
+    def clean(self):
+        if self.cleaned_data:
+            data = dict(self.cleaned_data)
+            oldpwd = data['oldpwd']
+            newpwd = data['newpwd']
+            newpwd2 = data['newpwd2']
+            if newpwd != newpwd2:
+                self.errors['提示:'] = '输入的两次新密码不同!'
+            ad = ADhandler()
+            msg = ad.user_authn(username, oldpwd)

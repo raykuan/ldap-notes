@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block nav %}
+    {% include 'nav.html' %}
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid indexcontent">
+        <div class="row">
+            <div class="navleft col-sm-2">
+                <div class="list-group">
+                    <a href="/index" class="list-group-item active">个人信息</a>
+                    <a href="#" class="list-group-item">修改密码</a>
+                    <a href="#" class="list-group-item">组织架构</a>
+                </div>
+            </div>
+            <div class="navright col-sm-8">
+                <form class="form-horizontal loginform" method="post" action="/changpwd/">
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 loginerror">
+                            {{ uf.errors }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">旧密码</label>
+                        <div class="col-sm-4">
+                            <input type="password" class="form-control" name="oldpwd" placeholder="旧密码">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">新密码</label>
+                        <div class="col-sm-4">
+                            <input type="password" class="form-control" name="newpwd" placeholder="新密码">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">确认新密码</label>
+                        <div class="col-sm-4">
+                            <input type="password" class="form-control" name="newpwd2" placeholder="确认新密码">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-4">
+                            <button type="submit" class="btn btn-primary">修改</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,18 +1,26 @@
-.none-padding {
+body{
     padding: 0 !important;
 }
 
-.down_border{
-    border-bottom: 1px solid;
+.customfont{
+    padding-top: 5px;
+    font-size: 28px;
 }
 
-.common-bgcolor {
-    background: #5499dd !important;
+.customcontianer{
+    margin: 0;
+    padding: 0;
 }
 
-.navi{
-    height: 75px;
+.logincontent {
+    background: #5499dd;
+}
+
+.loginav{
+    height: 70px;
     padding: 10px;
+    background: url(../imgs/repeat-images.gif) repeat-x;
+    background-position: 0 -891px;
     /*border-bottom: 1px solid;*/
 }
 
@@ -21,18 +29,61 @@
 }
 
 .loginform{
-    margin: 30px 15px 15px 15px;
-    padding: 50px 15px 15px 15px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 5px;
     background: white;
-    height: 260px;
+    /*height: 260px;*/
 }
 
-.pagefooter {
+.loginerror{
+    color: red;
+}
+
+.loginfooter {
     background: #f7f7f8;
     color: #999999;
     font-size: 11px;
     line-height: 20px;
-    margin: 105px 0 0 0;
+    /*margin: 105px 0 0 0;*/
     padding: 15px 0;
     text-align: center;
 }
+
+
+.navcommn {
+    height: 70px;
+    padding: 20px;
+    background: url(../imgs/repeat-images.gif) repeat-x;
+    background-position: 0 -891px;
+    border-bottom: 2px solid;
+    border-color: #5499dd;
+}
+
+.selectedtab span table.centerImg {
+    background: url(../imgs/tab-center-bg.png);
+    height: 26px !important;
+    font-weight: bold;
+    color: #FFFFFF;
+    text-align: center;
+    padding: 0 25px;
+}
+
+.indexcontent{
+    margin: 5px;
+    padding: 10px;
+    background-position: 0 -891px;
+}
+
+.navleft{
+    margin: 10px;
+    padding: 10px;
+    /*border-right: 2px solid;*/
+    border-color: #5499dd;
+}
+
+.navright{
+    margin: 10px;
+    padding: 10px;
+}
+
