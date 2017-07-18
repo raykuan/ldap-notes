@@ -7,11 +7,6 @@ body{
     font-size: 28px;
 }
 
-.customcontianer{
-    margin: 0;
-    padding: 0;
-}
-
 .logincontent {
     background: #5499dd;
 }
@@ -33,10 +28,9 @@ body{
     margin-bottom: 15px;
     padding: 5px;
     background: white;
-    /*height: 260px;*/
 }
 
-.loginerror{
+.errortext{
     color: red;
 }
 
@@ -87,3 +81,11 @@ body{
     padding: 10px;
 }
 
+.chpwd{
+    margin: 10px;
+    padding: 10px;
+    /*border: 2px solid;*/
+    /*border-color: #5499dd;*/
+    background: url(../imgs/mchpwd.png) repeat-x;
+    background-position: 0 100%;
+}

@@ -17,7 +17,11 @@ class ADhandler(object):
         self.bindpwd = 'Abc123!@#'
         self.cert_file = '/raykuan/workspace/ldap_rync/scertnew.pem'
         self.uri = 'ldaps://%s:636' % (self.host,)
-        # self.attr = {}
+        self.result = {
+            'code': '',
+            'code_info': '',
+            'data': '',
+        }
 
         try:
             self.conn = ldap.initialize(self.uri)
@@ -167,18 +171,23 @@ class ADhandler(object):
         try:
             status = self.get_user_status(user)
             if status is False:
-                msg = 'Could not find user %s.' % (user,)
-                ret = {'code': '525', 'info': msg}
-                return ret
+                self.result['code'] = '525'
+                self.result['code_info'] = 'Could not find user %s.' % (user,)
+                return self.result
+            self.result['data'] = status
             bind_dn = status['user_dn']
+            user_dn = status['user_id']
             user_conn = ldap.initialize(self.uri)
             user_conn.simple_bind_s(bind_dn, user_pwd)
         except ldap.INVALID_CREDENTIALS as e:
-            ret = self.parse_invalid_credentials(e, bind_dn)
-            return ret
+            result = self.parse_invalid_credentials(e, user_dn)
+            return result
         except ldap.LDAPError as e:
             raise e
-        return True
+        self.result['code'] = '0'
+        self.result['code_info'] = 'user %s authentication success' % (user,)
+        self.result['data'] = status
+        return self.result
 
     def parse_invalid_credentials(self, e, user_dn):
         if not isinstance(e, ldap.INVALID_CREDENTIALS):
@@ -201,43 +210,44 @@ class ADhandler(object):
         code = m.group('ldapcode')
         print(code)
         if code == '525':
-            msg = 'Could not find user %s.' % (user_dn,)
-            ret = {'code': '52e', 'info': msg}
-            return ret
+            self.result['code'] = '525'
+            self.result['code_info'] = 'Could not find user %s.' % (user_dn,)
+            return self.result
         if code == '52e':
-            msg = 'user_dn="%s" incorrect current password or generic authn failure' % (user_dn,)
-            ret = {'code': '52e', 'info': msg}
-            return ret
+            self.result['code'] = '52e'
+            self.result['code_info'] = 'user "%s" incorrect current password or generic authn failure' % (user_dn,)
+            return self.result
         if code == '530':
-            msg = 'user_dn="%s" user_dn has time of day login restrictions and cannot login at this time' % (user_dn,)
-            ret = {'code': '530', 'info': msg}
-            return ret
+            self.result['code'] = '530'
+            self.result['code_info'] = 'user "%s" user_dn has time of day login restrictions ' \
+                                       'and cannot login at this time' % (user_dn,)
+            return self.result
         if code == '531':
-            msg = 'user_dn="%s" user_dn has workstation login restrictions ' \
-                       'and cannot login at this workstation' % (user_dn,)
-            ret = {'code': '531', 'info': msg}
-            return ret
+            self.result['code'] = '531'
+            self.result['code_info'] = 'user "%s" user_dn has workstation login restrictions ' \
+                                       'and cannot login at this workstation' % (user_dn,)
+            return self.result
         if code == '532':
-            msg = 'user_dn="%s" user_dn\'s password has expired naturally' % (user_dn,)
-            ret = {'code': '532', 'info': msg}
-            return ret
+            self.result['code'] = '532'
+            self.result['code_info'] = 'user "%s" password has expired naturally' % (user_dn,)
+            return self.result
         if code == '533':
-            msg = 'user_dn="%s" user_dn account disabled' % (user_dn,)
-            ret = {'code': '533', 'info': msg}
-            return ret
+            self.result['code'] = '533'
+            self.result['code_info'] = 'user "%s" user_dn account disabled' % (user_dn,)
+            return self.result
         if code == '701':
-            msg = 'user_dn="%s" user_dn account expired' % (user_dn,)
-            ret = {'code': '701', 'info': msg}
-            return ret
+            self.result['code'] = '701'
+            self.result['code_info'] = 'user "%s" user_dn account expired' % (user_dn,)
+            return self.result
         if code == '773':
-            msg = 'user_dn="%s" user_dn\'s password has been administratively expired ' \
-                       '(force change on next login)' % (user_dn,)
-            ret = {'code': '773', 'info': msg}
-            return ret
+            self.result['code'] = '773'
+            self.result['code_info'] = 'user "%s" password has been administratively expired ' \
+                                       '(force change on next login)' % (user_dn,)
+            return self.result
         if code == '775':
-            msg = 'user_dn="%s" user_dn account locked due to excessive authentication failures' % (user_dn,)
-            ret = {'code': '775', 'info': msg}
-            return ret
+            self.result['code'] = '775'
+            self.result['code_info'] = 'user "%s" account locked due to excessive authentication failures' % (user_dn,)
+            return self.result
         return True
 
     def set_pwd(self, user, new_pwd):
@@ -245,31 +255,68 @@ class ADhandler(object):
         user_dn = status['user_dn']
 
         if self.is_admin(user_dn):
-            msg = '%s is a protected user, their password cannot be changed using this tool.' % (user,)
-            ret = {'code': '1001', 'info': msg}
-            return ret
+            self.result['code'] = '1001'
+            self.result['code_info'] = '%s is a protected user, their password cannot be changed using this tool.' % (user,)
+            return self.result
+
         if not status['acct_can_change_pwd']:
             msg_tmp = '%s cannot change password for the following reasons: %s' % (
                 user, ', '.join((set(status['acct_bad_states']) - set(self.can_change_pwd_states))))
             msg = msg_tmp.rstrip() + '.'
-            ret = {'code': '1002', 'info': msg}
-            return ret
-        if self.check_new_pwd(user, new_pwd):
-            new_pwd = ("\"" + new_pwd + "\"").encode('utf-16-le')
-            pass_mod = [(ldap.MOD_REPLACE, 'unicodePwd', [new_pwd])]
-            try:
-                self.conn.modify_s(user_dn, pass_mod)
-            except ldap.LDAPError as e:
-                return e
-        return True
+            self.result['code'] = '1002'
+            self.result['code_info'] = msg
+            return self.result
 
-    # def check_user_status(self, user):
-    #     user_bad_status = self.get_user_status(user)['acct_bad_states']
-    #     if len(user_bad_status) == 0:
-    #         return True
-    #     else:
-    #         msg = {'error_mg': 'user %s acct have bad status %s' % (user, user_bad_status)}
-    #         return CustomLdapError(msg)
+        if not len(new_pwd) >= int(status['acct_pwd_policy']['pwd_length_min']):
+            msg = 'New password for %s must be at least %d characters, submitted password has only %d.'\
+                  % (user, int(status['acct_pwd_policy']['pwd_length_min']), len(new_pwd))
+            self.result['code'] = '1003'
+            self.result['code_info'] = msg
+            return self.result
+
+        # Check Complexity - 3of4 and username/displayname check
+        if status['acct_pwd_policy']['pwd_complexity_enforced']:
+            patterns = [r'.*(?P<digit>[0-9]).*',
+                        r'.*(?P<lowercase>[a-z]).*',
+                        r'.*(?P<uppercase>[A-Z]).*',
+                        r'.*(?P<special>[~!@#$%^&*_\-+=`|\\(){}\[\]:;"\'<>,.?/]).*']
+            matches = []
+            for pattern in patterns:
+                match = re.match(pattern, new_pwd)
+                if match and match.groupdict() and match.groupdict().keys():
+                    matches.append(list(match.groupdict().keys()))
+            if len(matches) < 3:
+                msg = 'New password for %s must contain 3 of 4 character types (lowercase, uppercase, digit, special), ' \
+                      'only found %s.' % (user, matches)
+                self.result['code'] = '1004'
+                self.result['code_info'] = msg
+                return self.result
+
+        # The new password must not contain user's username
+        if status['user_id'].lower() in new_pwd.lower():
+            msg = 'New password for %s must not contain their username.' % (user,)
+            self.result['code'] = '1005'
+            self.result['code_info'] = msg
+            return self.result
+
+        # The new password must not contain word from displayname
+        for e in status['user_displayname_tokenized']:
+            if len(e) > 2 and e.lower() in new_pwd.lower():
+                msg = 'New password for %s must not contain a word longer than 2 characters ' \
+                      'from your name in our system (%s).' % (user, status['user_displayname_tokenized'])
+                self.result['code'] = '1006'
+                self.result['code_info'] = msg
+                return self.result
+
+        new_pwd = ("\"" + new_pwd + "\"").encode('utf-16-le')
+        pass_mod = [(ldap.MOD_REPLACE, 'unicodePwd', [new_pwd])]
+        try:
+            self.conn.modify_s(user_dn, pass_mod)
+        except ldap.LDAPError as e:
+            return e
+        self.result['code'] = '0'
+        self.result['code_info'] = 'set new password success'
+        return self.result
 
     def get_pwd_policies(self):
         default_policy_container = self.basedn
@@ -328,47 +375,6 @@ class ADhandler(object):
         pwd_policy['pwd_policy_priority'] = int(pwd_policy['pwd_policy_priority'])
         return pwd_policy
 
-    def check_new_pwd(self, user, new_pwd):
-        status = self.get_user_status(user)
-
-        if not len(new_pwd) >= int(status['acct_pwd_policy']['pwd_length_min']):
-            desc = 'New password for %s must be at least %d characters, submitted password has only %d.'\
-                  % (user, int(status['acct_pwd_policy']['pwd_length_min']), len(new_pwd))
-            msg = {'code': '1301', 'info': desc}
-            return msg
-
-        # Check Complexity - 3of4 and username/displayname check
-        if status['acct_pwd_policy']['pwd_complexity_enforced']:
-            patterns = [r'.*(?P<digit>[0-9]).*',
-                        r'.*(?P<lowercase>[a-z]).*',
-                        r'.*(?P<uppercase>[A-Z]).*',
-                        r'.*(?P<special>[~!@#$%^&*_\-+=`|\\(){}\[\]:;"\'<>,.?/]).*']
-            matches = []
-            for pattern in patterns:
-                match = re.match(pattern, new_pwd)
-                if match and match.groupdict() and match.groupdict().keys():
-                    matches.append(list(match.groupdict().keys()))
-            if len(matches) < 3:
-                desc = 'New password for %s must contain 3 of 4 character types (lowercase, uppercase, digit, special), ' \
-                      'only found %s.' % (user, matches)
-                msg = {'code': '1302', 'info': desc}
-                return msg
-
-        # The new password must not contain user's username
-        if status['user_id'].lower() in new_pwd.lower():
-            desc = 'New password for %s must not contain their username.' % (user,)
-            msg = {'code': '1303', 'info': desc}
-            return msg
-
-        # The new password must not contain word from displayname
-        for e in status['user_displayname_tokenized']:
-            if len(e) > 2 and e.lower() in new_pwd.lower():
-                desc = 'New password for %s must not contain a word longer than 2 characters ' \
-                      'from your name in our system (%s).' % (user, status['user_displayname_tokenized'])
-                msg = {'code': '1304', 'info': desc}
-                return msg
-        return True
-
     def ad_time_to_seconds(self, ad_time):
         return -(int(ad_time) / 10000000)
 
@@ -407,15 +413,13 @@ class ADhandler(object):
         return admin
 
 
-
-
 if __name__ == '__main__':
     pass
     # ADhandler().get_user_status('leikuan')
     # ADhandler().get_user_status('leitest')
-    r = ADhandler().set_pwd('leitest', 'Z@aa123')
+    # r = ADhandler().set_pwd('leitest', 'Z@aa123')
     # r = ADhandler().user_authn('leitest', 'Abc123!@#')
-    print(r)
+    # print(r)
     # ADhandler().user_authn_pwd_verify('dulei', 'Abc123!@#')
     # a = ADhandler()
     # res = a.user_authn_pwd_verify('leitest', 'Abc123!@#')

@@ -119,6 +119,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'adtest.wsgi.application'
 
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 1200
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
@@ -129,7 +131,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators

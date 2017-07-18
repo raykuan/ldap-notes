@@ -1,29 +1,30 @@
 {% extends 'base.html' %}
 
-{% block title %}AD自助密码服务{% endblock %}
+{% block title %}AD域自助密码服务{% endblock %}
 
 {% block nav %}
-    <div class="container-fluid customcontianer">
-        <div class="loginav">
+    <div class="container-fluid">
+        <div class="row loginav">
 {#            <p class="customfont">AD自助密码服务</p>#}
         </div>
     </div>
 {% endblock %}
 
 {% block content %}
-    <div class="container-fluid customcontianer">
+    <div class="container-fluid">
         <div class="row logincontent">
             <div class="col-md-3 col-md-offset-3">
                 <div class="logintext">
-                    <p class="customfont">AD自助密码服务</p>
+                    <p class="customfont">AD域自助密码服务</p>
                 </div>
             </div>
             <div class="col-md-3">
                 <form class="form-horizontal loginform" method="post" action="/login/">
                     <div class="form-group">
-                        <div class="col-sm-11 col-sm-offset-1 loginerror">
-                            {{ uf.errors }}
+                        <div class="col-sm-11 col-sm-offset-1 errortext">
+                            {{ result.code_info }}
                         </div>
+
                     </div>
                     <div class="form-group">
                         <label class="col-sm-3 control-label">账号</label>

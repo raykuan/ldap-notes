@@ -23,5 +23,7 @@ urlpatterns = [
     url(r'^login/', views.login),
     url(r'^index/', views.index),
     url(r'^logout/', views.logout),
+    url(r'^cancel/', views.cancel),
     url(r'^changepwd/', views.change_pwd),
+    url(r'^mustchangepwd/', views.must_change_pwd),
 ]
