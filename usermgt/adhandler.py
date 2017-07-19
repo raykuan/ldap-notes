@@ -412,9 +412,27 @@ class ADhandler(object):
                 return admin
         return admin
 
+    def get_all_user(self):
+        base_ou = "ou=eptok,%s" % (self.basedn,)
+        # search_filter = '(&(objectClass=person)(distinguishedName=%s))' % (base_ou,)
+        search_filter = '(&(objectClass=user))'
+        search_scope = ldap.SCOPE_SUBTREE
+        try:
+            # search for user
+            results_tmp = self.conn.search_s(base_ou, search_scope, search_filter)
+            results = []
+            print(results_tmp)
+            print(len(results_tmp))
+            print(results_tmp[4])
+            for i in results_tmp:
+                if 'telephoneNumber' in i[1].keys():
+                    print(i[1]['telephoneNumber'])
+        except ldap.LDAPError as e:
+            raise e
 
 if __name__ == '__main__':
-    pass
+    ADhandler().get_all_user()
+    # pass
     # ADhandler().get_user_status('leikuan')
     # ADhandler().get_user_status('leitest')
     # r = ADhandler().set_pwd('leitest', 'Z@aa123')
@@ -424,3 +442,5 @@ if __name__ == '__main__':
     # a = ADhandler()
     # res = a.user_authn_pwd_verify('leitest', 'Abc123!@#')
     # print(res)
+
+

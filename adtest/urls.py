@@ -24,6 +24,9 @@ urlpatterns = [
     url(r'^index/', views.index),
     url(r'^logout/', views.logout),
     url(r'^cancel/', views.cancel),
+    url(r'^cancelpwd/', views.cancelpwd),
     url(r'^changepwd/', views.change_pwd),
     url(r'^mustchangepwd/', views.must_change_pwd),
+    url(r'^forgetpwd/', views.forget_pwd),
+    url(r'^forgetpass/', views.forget_pass),
 ]

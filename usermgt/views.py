@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from usermgt.adhandler import ADhandler
+from usermgt.sms import SendEmail
 
 
 @csrf_exempt
@@ -175,4 +176,108 @@ def must_change_pwd(request):
             err_msg = ldapcodes[code]
             return render(request, 'mustchangepwd.html', {'err_msg': err_msg, 'data': data})
         return render(request, 'mustchangepwd.html', {'data': data})
+    return render(request, 'login.html')
+
+
+@csrf_exempt
+def forget_pwd(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        if not username:
+            err_msg = '账号不能为空'
+            return render(request, 'forgetpwd.html', {'err_msg': err_msg})
+
+        ad = ADhandler()
+        res_auth = ad.get_user_status(username)
+        if res_auth is False:
+            err_msg = '输入的账号不存在'
+            return render(request, 'forgetpwd.html', {'err_msg': err_msg})
+
+        if res_auth['user_id']:
+            request.session['user'] = username
+            se = SendEmail()
+            verify_code = se.verify_code()
+            email_to = [res_auth['user_id']+'@eptok.com']
+            email_subject = "AD域自助修改密码【验证码邮件】"
+            email_content = "验证码: %s" % (verify_code,)
+            try:
+                se.send_mail(email_to, email_subject, email_content)
+            except Exception as e:
+                raise e
+            request.session['verify_code'] = verify_code
+            request.session['res_auth'] = res_auth
+            return HttpResponseRedirect('/forgetpass/')
+
+    return render(request, 'forgetpwd.html')
+
+
+@csrf_exempt
+def forget_pass(request):
+    username = request.session.get('user', False)
+    verify_code = request.session.get('verify_code', False)
+    res_auth = request.session.get('res_auth', False)
+    print(username)
+    print(verify_code)
+    print(res_auth)
+    if not username or not verify_code or not res_auth:
+        return HttpResponseRedirect('/login/')
+    print(verify_code)
+    print(res_auth)
+    if res_auth['acct_pwd_policy']['pwd_complexity_enforced'] == 1:
+        res_auth['acct_pwd_policy']['pwd_complexity_enforced'] = '已启用'
+    if res_auth['acct_pwd_policy']['pwd_complexity_enforced'] == 0:
+        res_auth['acct_pwd_policy']['pwd_complexity_enforced'] = '未启用'
+    max_exp_day = res_auth['acct_pwd_policy']['pwd_ttl'] / (24 * 60 * 60)
+    res_auth['acct_pwd_policy']['pwd_ttl'] = max_exp_day
+    if request.method == 'POST':
+        verifycode = request.POST['verifycode']
+        newpwd = request.POST['newpwd']
+        newpwd2 = request.POST['newpwd2']
+        user = res_auth['user_id']
+        if not verify_code:
+            err_msg = '验证码不能为空!'
+            return render(request, 'forgetpass.html', {'err_msg': err_msg, 'data': res_auth})
+        if verify_code != verifycode:
+            err_msg = '验证码错误!'
+            return render(request, 'forgetpass.html', {'err_msg': err_msg, 'data': res_auth})
+        if not newpwd or not newpwd2:
+            err_msg = '密码不能为空!'
+            return render(request, 'forgetpass.html', {'err_msg': err_msg, 'data': res_auth})
+        if newpwd != newpwd2:
+            err_msg = "提示:输入的两次新密码不同!"
+            return render(request, 'forgetpass.html', {'err_msg': err_msg, 'data': res_auth})
+
+        ldapcodes = {'0': '修改密码成功, 请重新登录!',
+                     '1001': '管理员账号不能通过此工具修改密码，请联系管理员！',
+                     '1002': '此账户不能更改密码，请联系管理员！',
+                     '1003': '新密码不符合长度要求！',
+                     '1004': '新密码不符合复杂度要求！',
+                     '1005': '新密码不能包含用户名！',
+                     '1006': '新密码不能包含用户名!'}
+        ad = ADhandler()
+        res = ad.set_pwd(user, newpwd)
+        code = res['code']
+        if code == '0':
+            username = res_auth.get('user_id')
+            request.session['username'] = username
+            try:
+                del request.session['username']
+                del request.session['res_auth']
+                del request.session['verify_code']
+            except KeyError as e:
+                raise e
+            return render(request, 'finshed.html')
+        err_msg = ldapcodes[code]
+        return render(request, 'forgetpass.html', {'err_msg': err_msg, 'data': res_auth})
+
+    return render(request, 'forgetpass.html', {'data': res_auth})
+
+
+def cancelpwd(request):
+    try:
+        del request.session['user']
+        del request.session['res_auth']
+        del request.session['verify_code']
+    except KeyError as e:
+        raise e
     return render(request, 'login.html')
