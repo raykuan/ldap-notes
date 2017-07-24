@@ -3,6 +3,8 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from usermgt.adhandler import ADhandler
 from usermgt.sms import SendEmail
+import logging
+logger = logging.getLogger(__name__)
 
 
 @csrf_exempt
@@ -10,6 +12,9 @@ def login(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
+        if not username or not password:
+            result = {'code': '', 'code_info': '请输入用户名和密码！', 'data': ''}
+            return render(request, 'login.html', {'result': result})
         try:
             ad = ADhandler()
             res = ad.user_authn(username, password)
@@ -42,6 +47,7 @@ def login(request):
                 result = {'code': code, 'code_info': ldapcodes[code], 'data': res['data']}
                 return render(request, 'login.html', {'result': result})
         except Exception as e:
+            logger.error(e)
             raise e
     return render(request, 'login.html', )
 
@@ -60,6 +66,7 @@ def logout(request):
     try:
         del request.session['username']
     except KeyError as e:
+        logger.error(e)
         raise e
     return render(request, 'login.html')
 
@@ -68,6 +75,7 @@ def cancel(request):
     try:
         del request.session['res_dict']
     except KeyError as e:
+        logger.error(e)
         raise e
     return render(request, 'login.html')
 
@@ -171,6 +179,7 @@ def must_change_pwd(request):
                 try:
                     del request.session['res_dict']
                 except KeyError as e:
+                    logger.error(e)
                     raise e
                 return render(request, 'finshed.html')
             err_msg = ldapcodes[code]
@@ -203,6 +212,7 @@ def forget_pwd(request):
             try:
                 se.send_mail(email_to, email_subject, email_content)
             except Exception as e:
+                logger.error(e)
                 raise e
             request.session['verify_code'] = verify_code
             request.session['res_auth'] = res_auth
@@ -265,6 +275,7 @@ def forget_pass(request):
                 del request.session['res_auth']
                 del request.session['verify_code']
             except KeyError as e:
+                logger.error(e)
                 raise e
             return render(request, 'finshed.html')
         err_msg = ldapcodes[code]
@@ -279,5 +290,6 @@ def cancelpwd(request):
         del request.session['res_auth']
         del request.session['verify_code']
     except KeyError as e:
+        logger.error(e)
         raise e
     return render(request, 'login.html')
