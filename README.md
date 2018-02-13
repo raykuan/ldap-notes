@@ -1,9 +1,9 @@
 #### RayKuan @ 2017-09-03 10:25:29
 
 # msldap
-使用pyldap模块操作Microsoft Active Directory(简称MS AD)  
+概述：使用python的pyldap模块操作Microsoft Active Directory
 
-实现如下功能：  
+在adhandler.py文件中封装以下功能：  
 
 1、获取域用户信息  
 
