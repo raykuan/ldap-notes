@@ -45,20 +45,19 @@ b. 域名
 
 如搜索组织单元为ou1，则base DN为ou=ou1,o=O 或 ou=ou1,dc=zhangyang, dc=com  
 
-**(7)** AttributeType：属性类型，      
+**(7)** AttributeType：属性类型       
 
 **(8)** ObjectClass: 对象类,由多个attributetype(属性类型)组成, 每个条目(Entry)必须属于某个或多个对象类（Object Class）  
 
 **(9)** schema文件: 定义对象类、属性类型、语法和匹配规则, 有系统schema，用户也可自定义schema文件  
 
-**(10)** LDIF:LDAP Interchange Format, 是指存储LDAP配置信息及目录内容的标准文本文件格式。LDIF文件常用来向目录导入或更改记录信息，  
+**(10)** LDIF:LDAP Interchange Format, 是指存储LDAP配置信息及目录内容的标准文本文件格式。  
 
+LDIF文件常用来向目录导入或更改记录信息
 
-基本格式：AttributeName: value  
+基本格式：AttributeName: value如  
 
 属性名 冒号 空格 属性值  
-
-如  
 
 dn: dc=zy,dc=net  
 
@@ -96,7 +95,7 @@ filter支持通配符(wildcard)*
 
 ### 四、LDAP客户端和LDAP服务器端交互过程
 
-**1.** 绑定。LDAP客户端与LDAP服务器建立连接。可匿名绑定，也可以用户名+密码形式绑定(具体参考LDAP Server, AD不支持匿名查询)。  
+**1.** 绑定。LDAP客户端与服务器建立连接。可匿名绑定，也可用户名+密码绑定(参考LDAP Server, AD不支持匿名查询)。  
 
 **2.** LDAP客户端向LDAP服务器发出查询、添加、修改、删除entry等操作。    
 
