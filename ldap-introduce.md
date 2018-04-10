@@ -80,11 +80,11 @@ SSL port: 636
 
 每个表达式都放在括号内,  多个表达式用与(&),  或(|),  非(!)等连结  
 
-&(&(filter1)(filter2)...(filtern)) 表示filter1,filter2,...,filtern同时满足
+(&(filter1)(filter2)...(filtern)) 表示filter1,filter2,...,filtern同时满足
 
-|(|(filter1)(filter2)...(filtern)) 表示filter1,filter2,...,filtern至少有一个满足  
+(|(filter1)(filter2)...(filtern)) 表示filter1,filter2,...,filtern至少有一个满足  
 
-!(!(filter)) 表示非filter  
+(!(filter)) 表示非filter  
 
 filter支持通配符*(wildcard), *表示零或多个字符, 如（objectclass=*）,指列出所有类型的记录（不分类） 
 
