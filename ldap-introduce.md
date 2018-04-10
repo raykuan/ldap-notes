@@ -19,7 +19,7 @@ LDAP协议基于X.500标准, 与X.500不同，LDAP支持TCP/IP, 是跨平台的�
              test
  
 
-**O:Organization 组织**   
+**O:Organization 组织**    
 
 根的表示方法（参考LDAP Server）  
 
@@ -27,25 +27,34 @@ a. 组织名称(x.500) 假设组织名称为test则o=test
 
 b. 域名 假设组织域名为test.com则o=test.com 或 dc=test, dc=com  
 
-**OU:** Organization Unit 组织单元  
+**OU:**  
+Organization Unit 组织单元  
 
-**Entry:** 条目,记录， 由DN唯一标识  
+**Entry:**  
+条目, 记录, 由DN唯一标识  
 
-**DN:** Distinguished Name，每个叶子结点到根的路径就是DN, 如: cn=test, ou=ou1, o=test.com  
+**DN:**  
+Distinguished Name，每个叶子结点到根的路径就是DN, 如: cn=test, ou=ou1, o=test.com  
 
-**RDN:** Relative Distinguished Name，叶子结点本身的名字是RDN, 如:test就是RDN  
+**RDN:**  
+Relative Distinguished Name，叶子结点本身的名字是RDN, 如:test就是RDN  
 
-**Base DN:** 基准DN，指定LDAP search的起始DN, 即从哪个DN下开始搜索  
+**Base DN:**  
+基准DN，指定LDAP search的起始DN, 即从哪个DN下开始搜索  
 
 如搜索组织单元为ou1，则base DN为ou=ou1,o=O 或 ou=ou1,dc=test,dc=com  
 
-**AttributeType:** 属性类型       
+**AttributeType:**  
+属性类型       
 
-**ObjectClass:** 对象类,由多个attributetype(属性类型)组成, 每个条目(Entry)必须属于某个或多个对象类（Object Class）  
+**ObjectClass:**  
+对象类,由多个attributetype(属性类型)组成, 每个条目(Entry)必须属于某个或多个对象类（Object Class）  
 
-**schema文件:** 定义对象类、属性类型、语法和匹配规则, 有系统schema，用户也可自定义schema文件  
+**schema文件:**  
+定义对象类、属性类型、语法和匹配规则, 有系统schema，用户也可自定义schema文件  
 
-**LDIF:** LDAP Interchange Format, 是指存储LDAP配置信息及目录内容的标准文本文件格式。  
+**LDIF:**  
+LDAP Interchange Format, 是指存储LDAP配置信息及目录内容的标准文本文件格式。  
 
 LDIF文件常用来向目录导入或更改记录信息, 基本格式：AttributeName: value如  
 
@@ -89,5 +98,6 @@ filter支持通配符*(wildcard), *表示零或多个字符, 如（objectclass=*
 
 ### 五、LDAP软件
 
-常见的LDAP服务器：Microsoft Active Directory, IBM Domino, openldap
+常见的LDAP服务器：Microsoft Active Directory, IBM Domino, openldap  
+
 常见的LDAP客户端： JXplorer
