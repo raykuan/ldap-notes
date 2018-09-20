@@ -13,7 +13,7 @@
 
 其他功能可以在此基础上做扩展  
 
-依赖python第三方库：pyldap  
+依赖python第三方库：python-ldap  
 
 需要AD server颁发证书才能通过ldaps协议636端口修改域用户信息
 
